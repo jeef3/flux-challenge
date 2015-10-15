@@ -7,7 +7,7 @@ export default class App extends Component {
     return (
       <div className="css-root">
         <h1 className="css-planet-monitor">
-          Obi-Wan currently on {currentPlanet}
+          Obi-Wan currently on {currentPlanet.name}
         </h1>
 
         <section className="css-scrollable-list">
@@ -41,5 +41,5 @@ export default class App extends Component {
 }
 
 App.propTypes = {
-  currentPlanet: PropTypes.string
+  currentPlanet: PropTypes.object
 };

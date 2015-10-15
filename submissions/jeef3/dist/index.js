@@ -79,8 +79,6 @@
 	
 	var _actionsPlanet = __webpack_require__(181);
 	
-	var _actionsPlanet2 = _interopRequireDefault(_actionsPlanet);
-	
 	var _reducers = __webpack_require__(183);
 	
 	var reducers = _interopRequireWildcard(_reducers);
@@ -99,7 +97,7 @@
 	var ws = new WebSocket('ws://localhost:4000');
 	ws.onmessage = function (event) {
 	  var planet = JSON.parse(event.data);
-	  store.dispatch((0, _actionsPlanet2['default'])(planet));
+	  store.dispatch((0, _actionsPlanet.changePlanet)(planet));
 	};
 
 /***/ },
@@ -20973,7 +20971,7 @@
 	          "h1",
 	          { className: "css-planet-monitor" },
 	          "Obi-Wan currently on ",
-	          currentPlanet
+	          currentPlanet.name
 	        ),
 	        _react2["default"].createElement(
 	          "section",
@@ -21031,7 +21029,7 @@
 	exports["default"] = App;
 	
 	App.propTypes = {
-	  currentPlanet: _react.PropTypes.string
+	  currentPlanet: _react.PropTypes.object
 	};
 	module.exports = exports["default"];
 
@@ -21064,9 +21062,11 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports['default'] = LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
-	exports['default'] = CHANGE_PLANET = 'CHANGE_PLANET';
-	module.exports = exports['default'];
+	var LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
+	
+	exports.LOAD_JEDIS_COMPLETED = LOAD_JEDIS_COMPLETED;
+	var CHANGE_PLANET = 'CHANGE_PLANET';
+	exports.CHANGE_PLANET = CHANGE_PLANET;
 
 /***/ },
 /* 183 */
@@ -21098,7 +21098,7 @@
 	var _constantsActionTypes = __webpack_require__(182);
 	
 	exports['default'] = function (state, action) {
-	  if (state === undefined) state = '';
+	  if (state === undefined) state = {};
 	
 	  switch (action.type) {
 	    case _constantsActionTypes.CHANGE_PLANET:

@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 
 import AppContainer from './containers/AppContainer.jsx';
-import changePlanet from './actions/planet';
+import { changePlanet } from './actions/planet';
 import * as reducers from './reducers';
 
 const finalCreateStore = applyMiddleware(thunk)(createStore);
