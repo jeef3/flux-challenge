@@ -1,1 +1,1 @@
-export { default as jedi } from './jedis';
+export { default as currentPlanet } from './currentPlanet';

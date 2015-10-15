@@ -77,7 +77,11 @@
 	
 	var _containersAppContainerJsx2 = _interopRequireDefault(_containersAppContainerJsx);
 	
-	var _reducers = __webpack_require__(181);
+	var _actionsPlanet = __webpack_require__(181);
+	
+	var _actionsPlanet2 = _interopRequireDefault(_actionsPlanet);
+	
+	var _reducers = __webpack_require__(183);
 	
 	var reducers = _interopRequireWildcard(_reducers);
 	
@@ -91,6 +95,12 @@
 	  { store: store },
 	  _react2['default'].createElement(_containersAppContainerJsx2['default'], null)
 	), document.getElementById('app'));
+	
+	var ws = new WebSocket('ws://localhost:4000');
+	ws.onmessage = function (event) {
+	  var planet = JSON.parse(event.data);
+	  store.dispatch((0, _actionsPlanet2['default'])(planet));
+	};
 
 /***/ },
 /* 2 */
@@ -20909,8 +20919,10 @@
 	
 	var _componentsAppJsx2 = _interopRequireDefault(_componentsAppJsx);
 	
-	function mapStateToProps() {
-	  return {};
+	function mapStateToProps(_ref) {
+	  var currentPlanet = _ref.currentPlanet;
+	
+	  return { currentPlanet: currentPlanet };
 	};
 	
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(_componentsAppJsx2['default']);
@@ -20920,21 +20932,21 @@
 /* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var _react = __webpack_require__(2);
 	
@@ -20946,16 +20958,69 @@
 	  function App() {
 	    _classCallCheck(this, App);
 	
-	    _get(Object.getPrototypeOf(App.prototype), 'constructor', this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(App.prototype), "constructor", this).apply(this, arguments);
 	  }
 	
 	  _createClass(App, [{
-	    key: 'render',
+	    key: "render",
 	    value: function render() {
-	      return _react2['default'].createElement(
-	        'div',
-	        null,
-	        'Hello'
+	      var currentPlanet = this.props.currentPlanet;
+	
+	      return _react2["default"].createElement(
+	        "div",
+	        { className: "css-root" },
+	        _react2["default"].createElement(
+	          "h1",
+	          { className: "css-planet-monitor" },
+	          "Obi-Wan currently on ",
+	          currentPlanet
+	        ),
+	        _react2["default"].createElement(
+	          "section",
+	          { className: "css-scrollable-list" },
+	          _react2["default"].createElement(
+	            "ul",
+	            { className: "css-slots" },
+	            _react2["default"].createElement(
+	              "li",
+	              { className: "css-slot" },
+	              _react2["default"].createElement(
+	                "h3",
+	                null,
+	                "Jorak Uln"
+	              ),
+	              _react2["default"].createElement(
+	                "h6",
+	                null,
+	                "Homeworld: Korriban"
+	              )
+	            ),
+	            _react2["default"].createElement(
+	              "li",
+	              { className: "css-slot" },
+	              _react2["default"].createElement("h3", null),
+	              _react2["default"].createElement("h6", null)
+	            ),
+	            _react2["default"].createElement(
+	              "li",
+	              { className: "css-slot" },
+	              _react2["default"].createElement("h3", null),
+	              _react2["default"].createElement("h6", null)
+	            ),
+	            _react2["default"].createElement(
+	              "li",
+	              { className: "css-slot" },
+	              _react2["default"].createElement("h3", null),
+	              _react2["default"].createElement("h6", null)
+	            )
+	          ),
+	          _react2["default"].createElement(
+	            "div",
+	            { className: "css-scroll-buttons" },
+	            _react2["default"].createElement("button", { className: "css-button-up" }),
+	            _react2["default"].createElement("button", { className: "css-button-down" })
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -20963,8 +21028,12 @@
 	  return App;
 	})(_react.Component);
 	
-	exports['default'] = App;
-	module.exports = exports['default'];
+	exports["default"] = App;
+	
+	App.propTypes = {
+	  currentPlanet: _react.PropTypes.string
+	};
+	module.exports = exports["default"];
 
 /***/ },
 /* 181 */
@@ -20975,30 +21044,71 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	exports.changePlanet = changePlanet;
 	
-	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
+	var _constantsActionTypes = __webpack_require__(182);
 	
-	var _jedis = __webpack_require__(182);
-	
-	exports.jedi = _interopRequire(_jedis);
+	function changePlanet(planet) {
+	  return {
+	    type: _constantsActionTypes.CHANGE_PLANET,
+	    payload: planet
+	  };
+	}
 
 /***/ },
 /* 182 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports['default'] = LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
+	exports['default'] = CHANGE_PLANET = 'CHANGE_PLANET';
+	module.exports = exports['default'];
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 	
-	exports["default"] = function (state, action) {
-	  if (state === undefined) state = {};
+	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
 	
-	  return state;
+	var _currentPlanet = __webpack_require__(185);
+	
+	exports.currentPlanet = _interopRequire(_currentPlanet);
+
+/***/ },
+/* 184 */,
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _constantsActionTypes = __webpack_require__(182);
+	
+	exports['default'] = function (state, action) {
+	  if (state === undefined) state = '';
+	
+	  switch (action.type) {
+	    case _constantsActionTypes.CHANGE_PLANET:
+	      return action.payload;
+	    default:
+	      return state;
+	  }
 	};
 	
-	module.exports = exports["default"];
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

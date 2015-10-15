@@ -1,1 +1,3 @@
 export default LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
+
+export default CHANGE_PLANET = 'CHANGE_PLANET';
