@@ -1,8 +1,8 @@
-import { CHANGE_PLANET } from '../constants/ActionTypes';
+import { PLANET_CHANGED } from '../constants/ActionTypes';
 
 export default (state = {}, action) => {
   switch (action.type) {
-  case CHANGE_PLANET:
+  case PLANET_CHANGED:
     return action.payload;
   default:
     return state;

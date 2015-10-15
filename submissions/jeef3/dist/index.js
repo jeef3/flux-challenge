@@ -21065,8 +21065,8 @@
 	var LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
 	
 	exports.LOAD_JEDIS_COMPLETED = LOAD_JEDIS_COMPLETED;
-	var CHANGE_PLANET = 'CHANGE_PLANET';
-	exports.CHANGE_PLANET = CHANGE_PLANET;
+	var PLANET_CHANGED = 'PLANET_CHANGED';
+	exports.PLANET_CHANGED = PLANET_CHANGED;
 
 /***/ },
 /* 183 */
@@ -21101,7 +21101,7 @@
 	  if (state === undefined) state = {};
 	
 	  switch (action.type) {
-	    case _constantsActionTypes.CHANGE_PLANET:
+	    case _constantsActionTypes.PLANET_CHANGED:
 	      return action.payload;
 	    default:
 	      return state;
