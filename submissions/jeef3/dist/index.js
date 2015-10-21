@@ -21132,7 +21132,6 @@
 	exports.loadJediAsync = loadJediAsync;
 	exports.receiveJedi = receiveJedi;
 	exports.loadJediFailed = loadJediFailed;
-	exports.cancelJediLoad = cancelJediLoad;
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -21185,11 +21184,11 @@
 	  };
 	}
 	
-	function cancelJediLoad(id) {
-	  return function (dispatch, store) {
-	    // TODO: Cancel request
-	  };
-	}
+	// export function cancelJediLoad(id) {
+	//   return (dispatch, store) => {
+	//     // TODO: Cancel request
+	//   };
+	// }
 
 /***/ },
 /* 186 */
