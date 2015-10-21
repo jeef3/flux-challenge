@@ -50,8 +50,8 @@ export function loadJediFailed(err) {
   };
 }
 
-export function cancelJediLoad(id) {
-  return (dispatch, store) => {
-    // TODO: Cancel request
-  };
-}
+// export function cancelJediLoad(id) {
+//   return (dispatch, store) => {
+//     // TODO: Cancel request
+//   };
+// }

@@ -20925,9 +20925,15 @@
 	
 	function mapStateToProps(_ref) {
 	  var currentPlanet = _ref.currentPlanet;
+	  var currentJedis = _ref.currentJedis;
 	  var jedis = _ref.jedis;
 	
-	  return { currentPlanet: currentPlanet, jedis: jedis };
+	  return {
+	    currentPlanet: currentPlanet,
+	    jedis: currentJedis.map(function (id) {
+	      return jedis[id];
+	    })
+	  };
 	}
 	
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(_componentsAppJsx2['default']);
@@ -20987,11 +20993,11 @@
 	          _react2['default'].createElement(
 	            'ul',
 	            { className: 'css-slots' },
-	            jedis.map(function (jedi) {
+	            jedis.map(function (jedi, i) {
 	              return _react2['default'].createElement(_JediJsx.Jedi, {
-	                key: jedi.id,
+	                key: jedi ? jedi.id : i,
 	                jedi: jedi,
-	                highlight: jedi.homeworld.id === currentPlanet.id });
+	                highlight: jedi ? jedi.homeworld.id === currentPlanet.id : false });
 	            })
 	          ),
 	          _react2['default'].createElement(
@@ -21061,21 +21067,26 @@
 	
 	var Jedi = function Jedi(_ref) {
 	  var jedi = _ref.jedi;
-	  return _react2["default"].createElement(
-	    "li",
-	    { className: "css-slot", key: jedi.id },
-	    _react2["default"].createElement(
-	      "h3",
-	      null,
-	      jedi.name
-	    ),
-	    _react2["default"].createElement(
-	      "h6",
-	      null,
-	      "Homeworld: ",
-	      jedi.homeworld.name
-	    )
-	  );
+	
+	  if (jedi) {
+	    return _react2["default"].createElement(
+	      "li",
+	      { className: "css-slot" },
+	      _react2["default"].createElement(
+	        "h3",
+	        null,
+	        jedi.name
+	      ),
+	      _react2["default"].createElement(
+	        "h6",
+	        null,
+	        "Homeworld: ",
+	        jedi.homeworld.name
+	      )
+	    );
+	  } else {
+	    return _react2["default"].createElement("li", { className: "css-slot" });
+	  }
 	};
 	exports.Jedi = Jedi;
 
@@ -21571,6 +21582,10 @@
 	
 	exports.currentPlanet = _interopRequire(_currentPlanet);
 	
+	var _currentJedis = __webpack_require__(196);
+	
+	exports.currentJedis = _interopRequire(_currentJedis);
+	
 	var _jedis = __webpack_require__(195);
 	
 	exports.jedis = _interopRequire(_jedis);
@@ -21610,14 +21625,45 @@
 	  value: true
 	});
 	
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
 	var _constantsActionTypes = __webpack_require__(184);
 	
 	exports['default'] = function (state, action) {
-	  if (state === undefined) state = [];
+	  if (state === undefined) state = {};
 	
 	  switch (action.type) {
 	    case _constantsActionTypes.RECEIVE_JEDI:
-	      return [action.payload];
+	      var jedi = action.payload;
+	      return Object.assign({}, state, _defineProperty({}, jedi.id, jedi));
+	
+	    default:
+	      return state;
+	  }
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _constantsActionTypes = __webpack_require__(184);
+	
+	var initialState = [3616, null, null, null, null];
+	
+	exports['default'] = function (state, action) {
+	  if (state === undefined) state = initialState;
+	
+	  switch (action.type) {
+	    case _constantsActionTypes.MOVE_UP:
+	    case _constantsActionTypes.MOVE_DOWN:
 	    default:
 	      return state;
 	  }

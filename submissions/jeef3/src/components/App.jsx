@@ -13,11 +13,11 @@ export default class App extends Component {
 
         <section className="css-scrollable-list">
           <ul className="css-slots">
-            {jedis.map(jedi =>
+            {jedis.map((jedi, i) =>
               <Jedi
-                key={jedi.id}
+                key={jedi ? jedi.id : i}
                 jedi={jedi}
-                highlight={jedi.homeworld.id === currentPlanet.id} />)}
+                highlight={jedi ? jedi.homeworld.id === currentPlanet.id : false} />)}
           </ul>
 
           <div className="css-scroll-buttons">
