@@ -1,25 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 
+import { PlanetMonitor } from './PlanetMonitor.jsx';
+import { Jedi } from './Jedi.jsx';
+
 export default class App extends Component {
   render() {
-    const { currentPlanet } = this.props;
+    const { currentPlanet, jedis } = this.props;
 
     return (
       <div className="css-root">
-        <h1 className="css-planet-monitor">
-          Obi-Wan currently on {currentPlanet.name}
-        </h1>
+        <PlanetMonitor planet={currentPlanet} />
 
         <section className="css-scrollable-list">
           <ul className="css-slots">
-            {this.props.jedis.map((jedi) => {
-              return (
-                <li className="css-slot" key={jedi.id}>
-                  <h3>{jedi.name}</h3>
-                  <h6>Homeworld: {jedi.homeworld.name}</h6>
-                </li>
-              );
-            })}
+            {jedis.map(jedi =>
+              <Jedi
+                key={jedi.id}
+                jedi={jedi}
+                highlight={jedi.homeworld.id === currentPlanet.id} />)}
           </ul>
 
           <div className="css-scroll-buttons">

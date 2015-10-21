@@ -77,11 +77,11 @@
 	
 	var _containersAppContainerJsx2 = _interopRequireDefault(_containersAppContainerJsx);
 	
-	var _actionsPlanet = __webpack_require__(181);
+	var _actionsPlanet = __webpack_require__(183);
 	
-	var _actionsSith = __webpack_require__(183);
+	var _actionsJedi = __webpack_require__(185);
 	
-	var _reducers = __webpack_require__(191);
+	var _reducers = __webpack_require__(193);
 	
 	var reducers = _interopRequireWildcard(_reducers);
 	
@@ -103,8 +103,8 @@
 	  store.dispatch((0, _actionsPlanet.changePlanet)(planet));
 	};
 	
-	// Get first Sith: Darth Sidious
-	store.dispatch((0, _actionsSith.loadSithAsync)(3616));
+	// Get first Jedi: Darth Sidious
+	store.dispatch((0, _actionsJedi.loadJediAsync)(3616));
 
 /***/ },
 /* 2 */
@@ -20925,9 +20925,9 @@
 	
 	function mapStateToProps(_ref) {
 	  var currentPlanet = _ref.currentPlanet;
-	  var siths = _ref.siths;
+	  var jedis = _ref.jedis;
 	
-	  return { currentPlanet: currentPlanet, siths: siths };
+	  return { currentPlanet: currentPlanet, jedis: jedis };
 	}
 	
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(_componentsAppJsx2['default']);
@@ -20937,25 +20937,29 @@
 /* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 	
-	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+	var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var _react = __webpack_require__(2);
 	
 	var _react2 = _interopRequireDefault(_react);
+	
+	var _PlanetMonitorJsx = __webpack_require__(181);
+	
+	var _JediJsx = __webpack_require__(182);
 	
 	var App = (function (_Component) {
 	  _inherits(App, _Component);
@@ -20963,52 +20967,38 @@
 	  function App() {
 	    _classCallCheck(this, App);
 	
-	    _get(Object.getPrototypeOf(App.prototype), "constructor", this).apply(this, arguments);
+	    _get(Object.getPrototypeOf(App.prototype), 'constructor', this).apply(this, arguments);
 	  }
 	
 	  _createClass(App, [{
-	    key: "render",
+	    key: 'render',
 	    value: function render() {
-	      var currentPlanet = this.props.currentPlanet;
+	      var _props = this.props;
+	      var currentPlanet = _props.currentPlanet;
+	      var jedis = _props.jedis;
 	
-	      return _react2["default"].createElement(
-	        "div",
-	        { className: "css-root" },
-	        _react2["default"].createElement(
-	          "h1",
-	          { className: "css-planet-monitor" },
-	          "Obi-Wan currently on ",
-	          currentPlanet.name
-	        ),
-	        _react2["default"].createElement(
-	          "section",
-	          { className: "css-scrollable-list" },
-	          _react2["default"].createElement(
-	            "ul",
-	            { className: "css-slots" },
-	            this.props.siths.map(function (sith) {
-	              return _react2["default"].createElement(
-	                "li",
-	                { className: "css-slot", key: sith.id },
-	                _react2["default"].createElement(
-	                  "h3",
-	                  null,
-	                  sith.name
-	                ),
-	                _react2["default"].createElement(
-	                  "h6",
-	                  null,
-	                  "Homeworld: ",
-	                  sith.homeworld.name
-	                )
-	              );
+	      return _react2['default'].createElement(
+	        'div',
+	        { className: 'css-root' },
+	        _react2['default'].createElement(_PlanetMonitorJsx.PlanetMonitor, { planet: currentPlanet }),
+	        _react2['default'].createElement(
+	          'section',
+	          { className: 'css-scrollable-list' },
+	          _react2['default'].createElement(
+	            'ul',
+	            { className: 'css-slots' },
+	            jedis.map(function (jedi) {
+	              return _react2['default'].createElement(_JediJsx.Jedi, {
+	                key: jedi.id,
+	                jedi: jedi,
+	                highlight: jedi.homeworld.id === currentPlanet.id });
 	            })
 	          ),
-	          _react2["default"].createElement(
-	            "div",
-	            { className: "css-scroll-buttons" },
-	            _react2["default"].createElement("button", { className: "css-button-up" }),
-	            _react2["default"].createElement("button", { className: "css-button-down" })
+	          _react2['default'].createElement(
+	            'div',
+	            { className: 'css-scroll-buttons' },
+	            _react2['default'].createElement('button', { className: 'css-button-up' }),
+	            _react2['default'].createElement('button', { className: 'css-button-down' })
 	          )
 	        )
 	      );
@@ -21018,52 +21008,76 @@
 	  return App;
 	})(_react.Component);
 	
-	exports["default"] = App;
+	exports['default'] = App;
 	
 	App.propTypes = {
 	  currentPlanet: _react.PropTypes.object.isRequired,
-	  siths: _react.PropTypes.array.isRequired
+	  jedis: _react.PropTypes.array.isRequired
 	};
-	module.exports = exports["default"];
+	module.exports = exports['default'];
 
 /***/ },
 /* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.changePlanet = changePlanet;
 	
-	var _constantsActionTypes = __webpack_require__(182);
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 	
-	function changePlanet(planet) {
-	  return {
-	    type: _constantsActionTypes.PLANET_CHANGED,
-	    payload: planet
-	  };
-	}
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var PlanetMonitor = function PlanetMonitor(_ref) {
+	  var planet = _ref.planet;
+	  return _react2["default"].createElement(
+	    "h1",
+	    { className: "css-planet-monitor" },
+	    "Obi-Wan currently on ",
+	    planet.name
+	  );
+	};
+	exports.PlanetMonitor = PlanetMonitor;
 
 /***/ },
 /* 182 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
-	Object.defineProperty(exports, '__esModule', {
+	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	var LOAD_SITH_STARTED = 'LOAD_SITH_STARTED';
-	exports.LOAD_SITH_STARTED = LOAD_SITH_STARTED;
-	var LOAD_SITH_FAILED = 'LOAD_SITH_FAILED';
-	exports.LOAD_SITH_FAILED = LOAD_SITH_FAILED;
-	var RECEIVE_SITH = 'RECEIVE_SITH';
 	
-	exports.RECEIVE_SITH = RECEIVE_SITH;
-	var PLANET_CHANGED = 'PLANET_CHANGED';
-	exports.PLANET_CHANGED = PLANET_CHANGED;
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	
+	var _react = __webpack_require__(2);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var Jedi = function Jedi(_ref) {
+	  var jedi = _ref.jedi;
+	  return _react2["default"].createElement(
+	    "li",
+	    { className: "css-slot", key: jedi.id },
+	    _react2["default"].createElement(
+	      "h3",
+	      null,
+	      jedi.name
+	    ),
+	    _react2["default"].createElement(
+	      "h6",
+	      null,
+	      "Homeworld: ",
+	      jedi.homeworld.name
+	    )
+	  );
+	};
+	exports.Jedi = Jedi;
 
 /***/ },
 /* 183 */
@@ -21074,23 +21088,64 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.loadSithAsync = loadSithAsync;
-	exports.receiveSith = receiveSith;
-	exports.loadSithFailed = loadSithFailed;
-	exports.cancelSithLoad = cancelSithLoad;
+	exports.changePlanet = changePlanet;
+	
+	var _constantsActionTypes = __webpack_require__(184);
+	
+	function changePlanet(planet) {
+	  return {
+	    type: _constantsActionTypes.PLANET_CHANGED,
+	    payload: planet
+	  };
+	}
+
+/***/ },
+/* 184 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var LOAD_JEDI_QUEUED = 'LOAD_JEDI_QUEUED';
+	exports.LOAD_JEDI_QUEUED = LOAD_JEDI_QUEUED;
+	var LOAD_JEDI_STARTED = 'LOAD_JEDI_STARTED';
+	exports.LOAD_JEDI_STARTED = LOAD_JEDI_STARTED;
+	var LOAD_JEDI_FAILED = 'LOAD_JEDI_FAILED';
+	exports.LOAD_JEDI_FAILED = LOAD_JEDI_FAILED;
+	var RECEIVE_JEDI = 'RECEIVE_JEDI';
+	
+	exports.RECEIVE_JEDI = RECEIVE_JEDI;
+	var PLANET_CHANGED = 'PLANET_CHANGED';
+	exports.PLANET_CHANGED = PLANET_CHANGED;
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.loadJediAsync = loadJediAsync;
+	exports.receiveJedi = receiveJedi;
+	exports.loadJediFailed = loadJediFailed;
+	exports.cancelJediLoad = cancelJediLoad;
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _xhr = __webpack_require__(184);
+	var _xhr = __webpack_require__(186);
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
-	var _constantsActionTypes = __webpack_require__(182);
+	var _constantsActionTypes = __webpack_require__(184);
 	
-	function loadSithAsync(id) {
+	function loadJediAsync(id) {
 	  return function (dispatch) {
 	    dispatch({
-	      type: _constantsActionTypes.LOAD_SITH_QUEUED,
+	      type: _constantsActionTypes.LOAD_JEDI_QUEUED,
 	      payload: id
 	    });
 	
@@ -21102,48 +21157,48 @@
 	        uri: 'http://localhost:3000/dark-jedis/' + id
 	      }, function (err, res, body) {
 	        if (err) {
-	          reject(dispatch(loadSithFailed(err)));
+	          reject(dispatch(loadJediFailed(err)));
 	        } else {
-	          resolve(dispatch(receiveSith(JSON.parse(body))));
+	          resolve(dispatch(receiveJedi(JSON.parse(body))));
 	        }
 	      });
 	
 	      dispatch({
-	        type: _constantsActionTypes.LOAD_SITH_STARTED,
+	        type: _constantsActionTypes.LOAD_JEDI_STARTED,
 	        payload: { id: id, req: req }
 	      });
 	    });
 	  };
 	}
 	
-	function receiveSith(sith) {
+	function receiveJedi(jedi) {
 	  return {
-	    type: _constantsActionTypes.RECEIVE_SITH,
-	    payload: sith
+	    type: _constantsActionTypes.RECEIVE_JEDI,
+	    payload: jedi
 	  };
 	}
 	
-	function loadSithFailed(err) {
+	function loadJediFailed(err) {
 	  return {
-	    type: _constantsActionTypes.LOAD_SITH_FAILED,
+	    type: _constantsActionTypes.LOAD_JEDI_FAILED,
 	    payload: err
 	  };
 	}
 	
-	function cancelSithLoad(id) {
+	function cancelJediLoad(id) {
 	  return function (dispatch, store) {
 	    // TODO: Cancel request
 	  };
 	}
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var window = __webpack_require__(185)
-	var once = __webpack_require__(186)
-	var parseHeaders = __webpack_require__(187)
+	var window = __webpack_require__(187)
+	var once = __webpack_require__(188)
+	var parseHeaders = __webpack_require__(189)
 	
 	
 	
@@ -21332,7 +21387,7 @@
 
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {if (typeof window !== "undefined") {
@@ -21348,7 +21403,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports) {
 
 	module.exports = once
@@ -21373,11 +21428,11 @@
 
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(188)
-	  , forEach = __webpack_require__(189)
+	var trim = __webpack_require__(190)
+	  , forEach = __webpack_require__(191)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -21409,7 +21464,7 @@
 	}
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports) {
 
 	
@@ -21429,10 +21484,10 @@
 
 
 /***/ },
-/* 189 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(190)
+	var isFunction = __webpack_require__(192)
 	
 	module.exports = forEach
 	
@@ -21481,7 +21536,7 @@
 
 
 /***/ },
-/* 190 */
+/* 192 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction
@@ -21502,7 +21557,7 @@
 
 
 /***/ },
-/* 191 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21513,16 +21568,16 @@
 	
 	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
 	
-	var _currentPlanet = __webpack_require__(192);
+	var _currentPlanet = __webpack_require__(194);
 	
 	exports.currentPlanet = _interopRequire(_currentPlanet);
 	
-	var _siths = __webpack_require__(193);
+	var _jedis = __webpack_require__(195);
 	
-	exports.siths = _interopRequire(_siths);
+	exports.jedis = _interopRequire(_jedis);
 
 /***/ },
-/* 192 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21531,7 +21586,7 @@
 	  value: true
 	});
 	
-	var _constantsActionTypes = __webpack_require__(182);
+	var _constantsActionTypes = __webpack_require__(184);
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = {};
@@ -21547,7 +21602,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 193 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21556,13 +21611,13 @@
 	  value: true
 	});
 	
-	var _constantsActionTypes = __webpack_require__(182);
+	var _constantsActionTypes = __webpack_require__(184);
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = [];
 	
 	  switch (action.type) {
-	    case _constantsActionTypes.RECEIVE_SITH:
+	    case _constantsActionTypes.RECEIVE_JEDI:
 	      return [action.payload];
 	    default:
 	      return state;
