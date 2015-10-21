@@ -1,8 +1,8 @@
-import { CHANGE_PLANET } from '../constants/ActionTypes';
+import { PLANET_CHANGED } from '../constants/ActionTypes';
 
 export function changePlanet(planet) {
   return {
-    type: CHANGE_PLANET,
+    type: PLANET_CHANGED,
     payload: planet
   };
 }

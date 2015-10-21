@@ -79,7 +79,9 @@
 	
 	var _actionsPlanet = __webpack_require__(181);
 	
-	var _reducers = __webpack_require__(183);
+	var _actionsSith = __webpack_require__(183);
+	
+	var _reducers = __webpack_require__(191);
 	
 	var reducers = _interopRequireWildcard(_reducers);
 	
@@ -94,11 +96,15 @@
 	  _react2['default'].createElement(_containersAppContainerJsx2['default'], null)
 	), document.getElementById('app'));
 	
+	// Listen for planet change updates
 	var ws = new WebSocket('ws://localhost:4000');
 	ws.onmessage = function (event) {
 	  var planet = JSON.parse(event.data);
 	  store.dispatch((0, _actionsPlanet.changePlanet)(planet));
 	};
+	
+	// Get first Sith: Darth Sidious
+	store.dispatch((0, _actionsSith.loadSithAsync)(3616));
 
 /***/ },
 /* 2 */
@@ -20919,9 +20925,10 @@
 	
 	function mapStateToProps(_ref) {
 	  var currentPlanet = _ref.currentPlanet;
+	  var siths = _ref.siths;
 	
-	  return { currentPlanet: currentPlanet };
-	};
+	  return { currentPlanet: currentPlanet, siths: siths };
+	}
 	
 	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(_componentsAppJsx2['default']);
 	module.exports = exports['default'];
@@ -20979,38 +20986,23 @@
 	          _react2["default"].createElement(
 	            "ul",
 	            { className: "css-slots" },
-	            _react2["default"].createElement(
-	              "li",
-	              { className: "css-slot" },
-	              _react2["default"].createElement(
-	                "h3",
-	                null,
-	                "Jorak Uln"
-	              ),
-	              _react2["default"].createElement(
-	                "h6",
-	                null,
-	                "Homeworld: Korriban"
-	              )
-	            ),
-	            _react2["default"].createElement(
-	              "li",
-	              { className: "css-slot" },
-	              _react2["default"].createElement("h3", null),
-	              _react2["default"].createElement("h6", null)
-	            ),
-	            _react2["default"].createElement(
-	              "li",
-	              { className: "css-slot" },
-	              _react2["default"].createElement("h3", null),
-	              _react2["default"].createElement("h6", null)
-	            ),
-	            _react2["default"].createElement(
-	              "li",
-	              { className: "css-slot" },
-	              _react2["default"].createElement("h3", null),
-	              _react2["default"].createElement("h6", null)
-	            )
+	            this.props.siths.map(function (sith) {
+	              return _react2["default"].createElement(
+	                "li",
+	                { className: "css-slot", key: sith.id },
+	                _react2["default"].createElement(
+	                  "h3",
+	                  null,
+	                  sith.name
+	                ),
+	                _react2["default"].createElement(
+	                  "h6",
+	                  null,
+	                  "Homeworld: ",
+	                  sith.homeworld.name
+	                )
+	              );
+	            })
 	          ),
 	          _react2["default"].createElement(
 	            "div",
@@ -21029,7 +21021,8 @@
 	exports["default"] = App;
 	
 	App.propTypes = {
-	  currentPlanet: _react.PropTypes.object
+	  currentPlanet: _react.PropTypes.object.isRequired,
+	  siths: _react.PropTypes.array.isRequired
 	};
 	module.exports = exports["default"];
 
@@ -21048,7 +21041,7 @@
 	
 	function changePlanet(planet) {
 	  return {
-	    type: _constantsActionTypes.CHANGE_PLANET,
+	    type: _constantsActionTypes.PLANET_CHANGED,
 	    payload: planet
 	  };
 	}
@@ -21062,9 +21055,13 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	var LOAD_JEDIS_COMPLETED = 'LOAD_JEDIS_COMPLETED';
+	var LOAD_SITH_STARTED = 'LOAD_SITH_STARTED';
+	exports.LOAD_SITH_STARTED = LOAD_SITH_STARTED;
+	var LOAD_SITH_FAILED = 'LOAD_SITH_FAILED';
+	exports.LOAD_SITH_FAILED = LOAD_SITH_FAILED;
+	var RECEIVE_SITH = 'RECEIVE_SITH';
 	
-	exports.LOAD_JEDIS_COMPLETED = LOAD_JEDIS_COMPLETED;
+	exports.RECEIVE_SITH = RECEIVE_SITH;
 	var PLANET_CHANGED = 'PLANET_CHANGED';
 	exports.PLANET_CHANGED = PLANET_CHANGED;
 
@@ -21077,16 +21074,455 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	exports.loadSithAsync = loadSithAsync;
+	exports.receiveSith = receiveSith;
+	exports.loadSithFailed = loadSithFailed;
+	exports.cancelSithLoad = cancelSithLoad;
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _xhr = __webpack_require__(184);
+	
+	var _xhr2 = _interopRequireDefault(_xhr);
+	
+	var _constantsActionTypes = __webpack_require__(182);
+	
+	function loadSithAsync(id) {
+	  return function (dispatch) {
+	    dispatch({
+	      type: _constantsActionTypes.LOAD_SITH_QUEUED,
+	      payload: id
+	    });
+	
+	    // TODO: One request at a time?
+	
+	    return new Promise(function (resolve, reject) {
+	      var req = (0, _xhr2['default'])({
+	        body: id,
+	        uri: 'http://localhost:3000/dark-jedis/' + id
+	      }, function (err, res, body) {
+	        if (err) {
+	          reject(dispatch(loadSithFailed(err)));
+	        } else {
+	          resolve(dispatch(receiveSith(JSON.parse(body))));
+	        }
+	      });
+	
+	      dispatch({
+	        type: _constantsActionTypes.LOAD_SITH_STARTED,
+	        payload: { id: id, req: req }
+	      });
+	    });
+	  };
+	}
+	
+	function receiveSith(sith) {
+	  return {
+	    type: _constantsActionTypes.RECEIVE_SITH,
+	    payload: sith
+	  };
+	}
+	
+	function loadSithFailed(err) {
+	  return {
+	    type: _constantsActionTypes.LOAD_SITH_FAILED,
+	    payload: err
+	  };
+	}
+	
+	function cancelSithLoad(id) {
+	  return function (dispatch, store) {
+	    // TODO: Cancel request
+	  };
+	}
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var window = __webpack_require__(185)
+	var once = __webpack_require__(186)
+	var parseHeaders = __webpack_require__(187)
+	
+	
+	
+	module.exports = createXHR
+	createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
+	createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
+	
+	
+	function isEmpty(obj){
+	    for(var i in obj){
+	        if(obj.hasOwnProperty(i)) return false
+	    }
+	    return true
+	}
+	
+	function createXHR(options, callback) {
+	    function readystatechange() {
+	        if (xhr.readyState === 4) {
+	            loadFunc()
+	        }
+	    }
+	
+	    function getBody() {
+	        // Chrome with requestType=blob throws errors arround when even testing access to responseText
+	        var body = undefined
+	
+	        if (xhr.response) {
+	            body = xhr.response
+	        } else if (xhr.responseType === "text" || !xhr.responseType) {
+	            body = xhr.responseText || xhr.responseXML
+	        }
+	
+	        if (isJson) {
+	            try {
+	                body = JSON.parse(body)
+	            } catch (e) {}
+	        }
+	
+	        return body
+	    }
+	
+	    var failureResponse = {
+	                body: undefined,
+	                headers: {},
+	                statusCode: 0,
+	                method: method,
+	                url: uri,
+	                rawRequest: xhr
+	            }
+	
+	    function errorFunc(evt) {
+	        clearTimeout(timeoutTimer)
+	        if(!(evt instanceof Error)){
+	            evt = new Error("" + (evt || "Unknown XMLHttpRequest Error") )
+	        }
+	        evt.statusCode = 0
+	        callback(evt, failureResponse)
+	    }
+	
+	    // will load the data & process the response in a special response object
+	    function loadFunc() {
+	        if (aborted) return
+	        var status
+	        clearTimeout(timeoutTimer)
+	        if(options.useXDR && xhr.status===undefined) {
+	            //IE8 CORS GET successful response doesn't have a status field, but body is fine
+	            status = 200
+	        } else {
+	            status = (xhr.status === 1223 ? 204 : xhr.status)
+	        }
+	        var response = failureResponse
+	        var err = null
+	
+	        if (status !== 0){
+	            response = {
+	                body: getBody(),
+	                statusCode: status,
+	                method: method,
+	                headers: {},
+	                url: uri,
+	                rawRequest: xhr
+	            }
+	            if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+	                response.headers = parseHeaders(xhr.getAllResponseHeaders())
+	            }
+	        } else {
+	            err = new Error("Internal XMLHttpRequest Error")
+	        }
+	        callback(err, response, response.body)
+	
+	    }
+	
+	    if (typeof options === "string") {
+	        options = { uri: options }
+	    }
+	
+	    options = options || {}
+	    if(typeof callback === "undefined"){
+	        throw new Error("callback argument missing")
+	    }
+	    callback = once(callback)
+	
+	    var xhr = options.xhr || null
+	
+	    if (!xhr) {
+	        if (options.cors || options.useXDR) {
+	            xhr = new createXHR.XDomainRequest()
+	        }else{
+	            xhr = new createXHR.XMLHttpRequest()
+	        }
+	    }
+	
+	    var key
+	    var aborted
+	    var uri = xhr.url = options.uri || options.url
+	    var method = xhr.method = options.method || "GET"
+	    var body = options.body || options.data
+	    var headers = xhr.headers = options.headers || {}
+	    var sync = !!options.sync
+	    var isJson = false
+	    var timeoutTimer
+	
+	    if ("json" in options) {
+	        isJson = true
+	        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
+	        if (method !== "GET" && method !== "HEAD") {
+	            headers["content-type"] || headers["Content-Type"] || (headers["Content-Type"] = "application/json") //Don't override existing accept header declared by user
+	            body = JSON.stringify(options.json)
+	        }
+	    }
+	
+	    xhr.onreadystatechange = readystatechange
+	    xhr.onload = loadFunc
+	    xhr.onerror = errorFunc
+	    // IE9 must have onprogress be set to a unique function.
+	    xhr.onprogress = function () {
+	        // IE must die
+	    }
+	    xhr.ontimeout = errorFunc
+	    xhr.open(method, uri, !sync, options.username, options.password)
+	    //has to be after open
+	    if(!sync) {
+	        xhr.withCredentials = !!options.withCredentials
+	    }
+	    // Cannot set timeout with sync request
+	    // not setting timeout on the xhr object, because of old webkits etc. not handling that correctly
+	    // both npm's request and jquery 1.x use this kind of timeout, so this is being consistent
+	    if (!sync && options.timeout > 0 ) {
+	        timeoutTimer = setTimeout(function(){
+	            aborted=true//IE9 may still call readystatechange
+	            xhr.abort("timeout")
+	            var e = new Error("XMLHttpRequest timeout")
+	            e.code = "ETIMEDOUT"
+	            errorFunc(e)
+	        }, options.timeout )
+	    }
+	
+	    if (xhr.setRequestHeader) {
+	        for(key in headers){
+	            if(headers.hasOwnProperty(key)){
+	                xhr.setRequestHeader(key, headers[key])
+	            }
+	        }
+	    } else if (options.headers && !isEmpty(options.headers)) {
+	        throw new Error("Headers cannot be set on an XDomainRequest object")
+	    }
+	
+	    if ("responseType" in options) {
+	        xhr.responseType = options.responseType
+	    }
+	
+	    if ("beforeSend" in options &&
+	        typeof options.beforeSend === "function"
+	    ) {
+	        options.beforeSend(xhr)
+	    }
+	
+	    xhr.send(body)
+	
+	    return xhr
+	
+	
+	}
+	
+	function noop() {}
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {if (typeof window !== "undefined") {
+	    module.exports = window;
+	} else if (typeof global !== "undefined") {
+	    module.exports = global;
+	} else if (typeof self !== "undefined"){
+	    module.exports = self;
+	} else {
+	    module.exports = {};
+	}
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 186 */
+/***/ function(module, exports) {
+
+	module.exports = once
+	
+	once.proto = once(function () {
+	  Object.defineProperty(Function.prototype, 'once', {
+	    value: function () {
+	      return once(this)
+	    },
+	    configurable: true
+	  })
+	})
+	
+	function once (fn) {
+	  var called = false
+	  return function () {
+	    if (called) return
+	    called = true
+	    return fn.apply(this, arguments)
+	  }
+	}
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var trim = __webpack_require__(188)
+	  , forEach = __webpack_require__(189)
+	  , isArray = function(arg) {
+	      return Object.prototype.toString.call(arg) === '[object Array]';
+	    }
+	
+	module.exports = function (headers) {
+	  if (!headers)
+	    return {}
+	
+	  var result = {}
+	
+	  forEach(
+	      trim(headers).split('\n')
+	    , function (row) {
+	        var index = row.indexOf(':')
+	          , key = trim(row.slice(0, index)).toLowerCase()
+	          , value = trim(row.slice(index + 1))
+	
+	        if (typeof(result[key]) === 'undefined') {
+	          result[key] = value
+	        } else if (isArray(result[key])) {
+	          result[key].push(value)
+	        } else {
+	          result[key] = [ result[key], value ]
+	        }
+	      }
+	  )
+	
+	  return result
+	}
+
+/***/ },
+/* 188 */
+/***/ function(module, exports) {
+
+	
+	exports = module.exports = trim;
+	
+	function trim(str){
+	  return str.replace(/^\s*|\s*$/g, '');
+	}
+	
+	exports.left = function(str){
+	  return str.replace(/^\s*/, '');
+	};
+	
+	exports.right = function(str){
+	  return str.replace(/\s*$/, '');
+	};
+
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isFunction = __webpack_require__(190)
+	
+	module.exports = forEach
+	
+	var toString = Object.prototype.toString
+	var hasOwnProperty = Object.prototype.hasOwnProperty
+	
+	function forEach(list, iterator, context) {
+	    if (!isFunction(iterator)) {
+	        throw new TypeError('iterator must be a function')
+	    }
+	
+	    if (arguments.length < 3) {
+	        context = this
+	    }
+	    
+	    if (toString.call(list) === '[object Array]')
+	        forEachArray(list, iterator, context)
+	    else if (typeof list === 'string')
+	        forEachString(list, iterator, context)
+	    else
+	        forEachObject(list, iterator, context)
+	}
+	
+	function forEachArray(array, iterator, context) {
+	    for (var i = 0, len = array.length; i < len; i++) {
+	        if (hasOwnProperty.call(array, i)) {
+	            iterator.call(context, array[i], i, array)
+	        }
+	    }
+	}
+	
+	function forEachString(string, iterator, context) {
+	    for (var i = 0, len = string.length; i < len; i++) {
+	        // no such thing as a sparse string.
+	        iterator.call(context, string.charAt(i), i, string)
+	    }
+	}
+	
+	function forEachObject(object, iterator, context) {
+	    for (var k in object) {
+	        if (hasOwnProperty.call(object, k)) {
+	            iterator.call(context, object[k], k, object)
+	        }
+	    }
+	}
+
+
+/***/ },
+/* 190 */
+/***/ function(module, exports) {
+
+	module.exports = isFunction
+	
+	var toString = Object.prototype.toString
+	
+	function isFunction (fn) {
+	  var string = toString.call(fn)
+	  return string === '[object Function]' ||
+	    (typeof fn === 'function' && string !== '[object RegExp]') ||
+	    (typeof window !== 'undefined' &&
+	     // IE8 and below
+	     (fn === window.setTimeout ||
+	      fn === window.alert ||
+	      fn === window.confirm ||
+	      fn === window.prompt))
+	};
+
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
 	
 	function _interopRequire(obj) { return obj && obj.__esModule ? obj['default'] : obj; }
 	
-	var _currentPlanet = __webpack_require__(185);
+	var _currentPlanet = __webpack_require__(192);
 	
 	exports.currentPlanet = _interopRequire(_currentPlanet);
+	
+	var _siths = __webpack_require__(193);
+	
+	exports.siths = _interopRequire(_siths);
 
 /***/ },
-/* 184 */,
-/* 185 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21103,6 +21539,31 @@
 	  switch (action.type) {
 	    case _constantsActionTypes.PLANET_CHANGED:
 	      return action.payload;
+	    default:
+	      return state;
+	  }
+	};
+	
+	module.exports = exports['default'];
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _constantsActionTypes = __webpack_require__(182);
+	
+	exports['default'] = function (state, action) {
+	  if (state === undefined) state = [];
+	
+	  switch (action.type) {
+	    case _constantsActionTypes.RECEIVE_SITH:
+	      return [action.payload];
 	    default:
 	      return state;
 	  }

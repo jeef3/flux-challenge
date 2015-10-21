@@ -12,22 +12,14 @@ export default class App extends Component {
 
         <section className="css-scrollable-list">
           <ul className="css-slots">
-            <li className="css-slot">
-              <h3>Jorak Uln</h3>
-              <h6>Homeworld: Korriban</h6>
-            </li>
-            <li className="css-slot">
-              <h3></h3>
-              <h6></h6>
-            </li>
-            <li className="css-slot">
-              <h3></h3>
-              <h6></h6>
-            </li>
-            <li className="css-slot">
-              <h3></h3>
-              <h6></h6>
-            </li>
+            {this.props.jedis.map((jedi) => {
+              return (
+                <li className="css-slot" key={jedi.id}>
+                  <h3>{jedi.name}</h3>
+                  <h6>Homeworld: {jedi.homeworld.name}</h6>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="css-scroll-buttons">
@@ -41,5 +33,6 @@ export default class App extends Component {
 }
 
 App.propTypes = {
-  currentPlanet: PropTypes.object
+  currentPlanet: PropTypes.object.isRequired,
+  jedis: PropTypes.array.isRequired
 };

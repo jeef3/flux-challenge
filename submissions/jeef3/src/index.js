@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 
 import AppContainer from './containers/AppContainer.jsx';
 import { changePlanet } from './actions/planet';
+import { loadJediAsync } from './actions/jedi';
 import * as reducers from './reducers';
 
 const finalCreateStore = applyMiddleware(thunk)(createStore);
@@ -19,8 +20,12 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('app'));
 
+// Listen for planet change updates
 const ws = new WebSocket('ws://localhost:4000');
 ws.onmessage = (event) => {
   const planet = JSON.parse(event.data);
   store.dispatch(changePlanet(planet));
 }
+
+// Get first Jedi: Darth Sidious
+store.dispatch(loadJediAsync(3616));
