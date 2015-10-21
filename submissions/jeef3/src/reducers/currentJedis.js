@@ -14,11 +14,23 @@ export default (state = initialState, action) => {
 
   case LOAD_JEDI_QUEUED:
     // TODO: Mark the Jedi as loading
+    return state;
 
   case RECEIVE_JEDI:
-    let match = state
+    let receivedJedi = action.payload;
+    let jedis = Object.assign([], state);
+    let match = jedis
       .filter(jedi => jedi ? jedi.state === 'needed' : false)
-      .filter(jedi => jedi.id === action.payload.id);
+      .filter(jedi => jedi.id === receivedJedi.id)[0];
+
+    match.state = 'loaded';
+
+    let index = jedis.indexOf(match);
+    if (index > -1 && index < 4 && receivedJedi.apprentice.id) {
+      jedis[index + 1] = { id: receivedJedi.apprentice.id, state: 'needed' };
+    }
+
+    return jedis;
 
   default:
     return state;

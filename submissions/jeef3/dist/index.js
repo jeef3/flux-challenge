@@ -21173,6 +21173,7 @@
 	          reject(dispatch(loadJediFailed(err)));
 	        } else {
 	          resolve(dispatch(receiveJedi(JSON.parse(body))));
+	          dispatch(loadNextJediAsync());
 	        }
 	      });
 	
@@ -21686,14 +21687,26 @@
 	    case _constantsActionTypes.MOVE_DOWN:
 	
 	    case _constantsActionTypes.LOAD_JEDI_QUEUED:
-	    // TODO: Mark the Jedi as loading
+	      // TODO: Mark the Jedi as loading
+	      return state;
 	
 	    case _constantsActionTypes.RECEIVE_JEDI:
-	      var match = state.filter(function (jedi) {
+	      var receivedJedi = action.payload;
+	      var jedis = Object.assign([], state);
+	      var match = jedis.filter(function (jedi) {
 	        return jedi ? jedi.state === 'needed' : false;
 	      }).filter(function (jedi) {
-	        return jedi.id === action.payload.id;
-	      });
+	        return jedi.id === receivedJedi.id;
+	      })[0];
+	
+	      match.state = 'loaded';
+	
+	      var index = jedis.indexOf(match);
+	      if (index > -1 && index < 4 && receivedJedi.apprentice.id) {
+	        jedis[index + 1] = { id: receivedJedi.apprentice.id, state: 'needed' };
+	      }
+	
+	      return jedis;
 	
 	    default:
 	      return state;

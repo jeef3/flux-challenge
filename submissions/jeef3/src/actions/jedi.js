@@ -25,6 +25,7 @@ export function loadJediAsync(id) {
           reject(dispatch(loadJediFailed(err)));
         } else {
           resolve(dispatch(receiveJedi(JSON.parse(body))));
+          dispatch(loadNextJediAsync());
         }
       });
 
