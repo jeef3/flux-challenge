@@ -5,7 +5,7 @@ import App from '../components/App.jsx';
 function mapStateToProps({ currentPlanet, currentJedis, jedis }) {
   return {
     currentPlanet,
-    jedis: currentJedis.map(id => jedis[id])
+    jedis: currentJedis.map(jedi => jedi ? jedis[jedi.id] : null)
   };
 }
 

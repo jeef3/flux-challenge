@@ -36,6 +36,15 @@ export function loadJediAsync(id) {
   };
 }
 
+export function loadNextJediAsync() {
+  return (dispatch, getState) => {
+    let toLoad = getState().currentJedis.filter(jedi => jedi ? jedi.state === 'needed' : false);
+    if (toLoad.length) {
+      dispatch(loadJediAsync(toLoad[0].id));
+    }
+  };
+}
+
 export function receiveJedi(jedi) {
   return {
     type: RECEIVE_JEDI,

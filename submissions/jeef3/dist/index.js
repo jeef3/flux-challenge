@@ -103,8 +103,8 @@
 	  store.dispatch((0, _actionsPlanet.changePlanet)(planet));
 	};
 	
-	// Get first Jedi: Darth Sidious
-	store.dispatch((0, _actionsJedi.loadJediAsync)(3616));
+	// Start loading Jedis
+	store.dispatch((0, _actionsJedi.loadNextJediAsync)());
 
 /***/ },
 /* 2 */
@@ -20930,8 +20930,8 @@
 	
 	  return {
 	    currentPlanet: currentPlanet,
-	    jedis: currentJedis.map(function (id) {
-	      return jedis[id];
+	    jedis: currentJedis.map(function (jedi) {
+	      return jedi ? jedis[jedi.id] : null;
 	    })
 	  };
 	}
@@ -21126,8 +21126,10 @@
 	var LOAD_JEDI_FAILED = 'LOAD_JEDI_FAILED';
 	exports.LOAD_JEDI_FAILED = LOAD_JEDI_FAILED;
 	var RECEIVE_JEDI = 'RECEIVE_JEDI';
-	
 	exports.RECEIVE_JEDI = RECEIVE_JEDI;
+	var INVALIDATE_JEDI = 'INVALIDATE_JEDI';
+	
+	exports.INVALIDATE_JEDI = INVALIDATE_JEDI;
 	var PLANET_CHANGED = 'PLANET_CHANGED';
 	exports.PLANET_CHANGED = PLANET_CHANGED;
 
@@ -21141,6 +21143,7 @@
 	  value: true
 	});
 	exports.loadJediAsync = loadJediAsync;
+	exports.loadNextJediAsync = loadNextJediAsync;
 	exports.receiveJedi = receiveJedi;
 	exports.loadJediFailed = loadJediFailed;
 	
@@ -21178,6 +21181,17 @@
 	        payload: { id: id, req: req }
 	      });
 	    });
+	  };
+	}
+	
+	function loadNextJediAsync() {
+	  return function (dispatch, getState) {
+	    var toLoad = getState().currentJedis.filter(function (jedi) {
+	      return jedi ? jedi.state === 'needed' : false;
+	    });
+	    if (toLoad.length) {
+	      dispatch(loadJediAsync(toLoad[0].id));
+	    }
 	  };
 	}
 	
@@ -21637,6 +21651,12 @@
 	      var jedi = action.payload;
 	      return Object.assign({}, state, _defineProperty({}, jedi.id, jedi));
 	
+	    case _constantsActionTypes.INVALIDATE_JEDI:
+	      var id = action.payload;
+	      var jedis = Object.assign({}, state);
+	      delete jedis[id];
+	      return jedis;
+	
 	    default:
 	      return state;
 	  }
@@ -21656,7 +21676,7 @@
 	
 	var _constantsActionTypes = __webpack_require__(184);
 	
-	var initialState = [3616, null, null, null, null];
+	var initialState = [{ id: 3616, state: 'needed' }, null, null, null, null];
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = initialState;
@@ -21664,6 +21684,17 @@
 	  switch (action.type) {
 	    case _constantsActionTypes.MOVE_UP:
 	    case _constantsActionTypes.MOVE_DOWN:
+	
+	    case _constantsActionTypes.LOAD_JEDI_QUEUED:
+	    // TODO: Mark the Jedi as loading
+	
+	    case _constantsActionTypes.RECEIVE_JEDI:
+	      var match = state.filter(function (jedi) {
+	        return jedi ? jedi.state === 'needed' : false;
+	      }).filter(function (jedi) {
+	        return jedi.id === action.payload.id;
+	      });
+	
 	    default:
 	      return state;
 	  }

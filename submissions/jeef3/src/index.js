@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 
 import AppContainer from './containers/AppContainer.jsx';
 import { changePlanet } from './actions/planet';
-import { loadJediAsync } from './actions/jedi';
+import { loadNextJediAsync } from './actions/jedi';
 import * as reducers from './reducers';
 
 const finalCreateStore = applyMiddleware(thunk)(createStore);
@@ -27,5 +27,5 @@ ws.onmessage = (event) => {
   store.dispatch(changePlanet(planet));
 }
 
-// Get first Jedi: Darth Sidious
-store.dispatch(loadJediAsync(3616));
+// Start loading Jedis
+store.dispatch(loadNextJediAsync());
