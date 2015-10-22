@@ -19,8 +19,12 @@ export default (state = initialState, action) => {
 
   case MOVE_DOWN:
     jedis = Object.assign([], state);
-    jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
-    return jedis.slice(2, 5);
+    if (jedis[4].apprentice.id) {
+      jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
+    } else {
+      jedis.push({}, {});
+    }
+    return jedis.slice(2);
 
   case LOAD_JEDI_QUEUED:
     // TODO: Mark the Jedi as loading
@@ -37,10 +41,10 @@ export default (state = initialState, action) => {
     let index = jedis.indexOf(match);
     jedis[index] = Object.assign(match, receivedJedi);
 
-    if (index > 0 && 
+    if (index > 0 &&
         receivedJedi.master.id &&
         jedis[index - 1].state !== 'loaded') {
-      jedis[index = 1].id = receivedJedi.master.id;
+      jedis[index - 1].id = receivedJedi.master.id;
       jedis[index - 1].state = 'needed';
     }
 

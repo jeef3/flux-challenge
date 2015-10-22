@@ -21185,14 +21185,12 @@
 	      payload: id
 	    });
 	
-	    // TODO: One request at a time?
-	
 	    return new Promise(function (resolve, reject) {
 	      var req = (0, _xhr2['default'])({
 	        body: id,
 	        uri: 'http://localhost:3000/dark-jedis/' + id
 	      }, function (err, res, body) {
-	        if (err) {
+	        if (err || res.statusCode !== 200) {
 	          reject(dispatch(loadJediFailed(err)));
 	        } else {
 	          resolve(dispatch(receiveJedi(JSON.parse(body))));
@@ -21692,8 +21690,12 @@
 	
 	    case _constantsActionTypes.MOVE_DOWN:
 	      jedis = Object.assign([], state);
-	      jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
-	      return jedis.slice(2, 5);
+	      if (jedis[4].apprentice.id) {
+	        jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
+	      } else {
+	        jedis.push({}, {});
+	      }
+	      return jedis.slice(2);
 	
 	    case _constantsActionTypes.LOAD_JEDI_QUEUED:
 	      // TODO: Mark the Jedi as loading
@@ -21713,7 +21715,7 @@
 	      jedis[index] = Object.assign(match, receivedJedi);
 	
 	      if (index > 0 && receivedJedi.master.id && jedis[index - 1].state !== 'loaded') {
-	        jedis[index = 1].id = receivedJedi.master.id;
+	        jedis[index - 1].id = receivedJedi.master.id;
 	        jedis[index - 1].state = 'needed';
 	      }
 	

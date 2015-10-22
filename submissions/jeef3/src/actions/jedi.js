@@ -16,14 +16,12 @@ export function loadJediAsync(id) {
       payload: id
     });
 
-    // TODO: One request at a time?
-
     return new Promise((resolve, reject) => {
       var req = xhr({
         body: id,
         uri: `http://localhost:3000/dark-jedis/${id}`
       }, (err, res, body) => {
-        if (err) {
+        if (err || res.statusCode !== 200) {
           reject(dispatch(loadJediFailed(err)));
         } else {
           resolve(dispatch(receiveJedi(JSON.parse(body))));
