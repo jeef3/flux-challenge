@@ -4,7 +4,9 @@ import {
   LOAD_JEDI_QUEUED,
   LOAD_JEDI_STARTED,
   LOAD_JEDI_FAILED,
-  RECEIVE_JEDI
+  RECEIVE_JEDI,
+  MOVE_UP,
+  MOVE_DOWN
 } from '../constants/ActionTypes';
 
 export function loadJediAsync(id) {
@@ -39,7 +41,9 @@ export function loadJediAsync(id) {
 
 export function loadNextJediAsync() {
   return (dispatch, getState) => {
-    let toLoad = getState().currentJedis.filter(jedi => jedi ? jedi.state === 'needed' : false);
+    let toLoad = getState().jedis
+      .filter(jedi => jedi.state === 'needed');
+
     if (toLoad.length) {
       dispatch(loadJediAsync(toLoad[0].id));
     }
@@ -57,6 +61,20 @@ export function loadJediFailed(err) {
   return {
     type: LOAD_JEDI_FAILED,
     payload: err
+  };
+}
+
+export function moveUp() {
+  return dispatch => {
+    dispatch({ type: MOVE_UP });
+    dispatch(loadNextJediAsync());
+  };
+}
+
+export function moveDown() {
+  return dispatch => {
+    dispatch({ type: MOVE_DOWN });
+    dispatch(loadNextJediAsync());
   };
 }
 

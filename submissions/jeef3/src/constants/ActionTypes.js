@@ -4,4 +4,7 @@ export const LOAD_JEDI_FAILED = 'LOAD_JEDI_FAILED';
 export const RECEIVE_JEDI = 'RECEIVE_JEDI';
 export const INVALIDATE_JEDI = 'INVALIDATE_JEDI';
 
+export const MOVE_UP = 'MOVE_UP';
+export const MOVE_DOWN = 'MOVE_DOWN';
+
 export const PLANET_CHANGED = 'PLANET_CHANGED';

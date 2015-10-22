@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 export const Jedi = ({jedi}) => {
-  if (jedi) {
+  if (jedi.state === 'loaded') {
     return (
       <li className="css-slot">
         <h3>{jedi.name}</h3>

@@ -20923,20 +20923,27 @@
 	
 	var _componentsAppJsx2 = _interopRequireDefault(_componentsAppJsx);
 	
+	var _actionsJedi = __webpack_require__(185);
+	
 	function mapStateToProps(_ref) {
 	  var currentPlanet = _ref.currentPlanet;
-	  var currentJedis = _ref.currentJedis;
 	  var jedis = _ref.jedis;
 	
+	  return { currentPlanet: currentPlanet, jedis: jedis };
+	}
+	
+	function mapDispatchToProps(dispatch) {
 	  return {
-	    currentPlanet: currentPlanet,
-	    jedis: currentJedis.map(function (jedi) {
-	      return jedi ? jedis[jedi.id] : null;
-	    })
+	    onMoveUp: function onMoveUp() {
+	      return dispatch((0, _actionsJedi.moveUp)());
+	    },
+	    onMoveDown: function onMoveDown() {
+	      return dispatch((0, _actionsJedi.moveDown)());
+	    }
 	  };
 	}
 	
-	exports['default'] = (0, _reactRedux.connect)(mapStateToProps)(_componentsAppJsx2['default']);
+	exports['default'] = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_componentsAppJsx2['default']);
 	module.exports = exports['default'];
 
 /***/ },
@@ -20982,6 +20989,8 @@
 	      var _props = this.props;
 	      var currentPlanet = _props.currentPlanet;
 	      var jedis = _props.jedis;
+	      var onMoveUp = _props.onMoveUp;
+	      var onMoveDown = _props.onMoveDown;
 	
 	      return _react2['default'].createElement(
 	        'div',
@@ -20995,16 +21004,20 @@
 	            { className: 'css-slots' },
 	            jedis.map(function (jedi, i) {
 	              return _react2['default'].createElement(_JediJsx.Jedi, {
-	                key: jedi ? jedi.id : i,
+	                key: jedi.id || i,
 	                jedi: jedi,
-	                highlight: jedi ? jedi.homeworld.id === currentPlanet.id : false });
+	                highlight: jedi.state === 'loaded' ? jedi.homeworld.id === currentPlanet.id : false });
 	            })
 	          ),
 	          _react2['default'].createElement(
 	            'div',
 	            { className: 'css-scroll-buttons' },
-	            _react2['default'].createElement('button', { className: 'css-button-up' }),
-	            _react2['default'].createElement('button', { className: 'css-button-down' })
+	            _react2['default'].createElement('button', {
+	              className: 'css-button-up',
+	              onClick: onMoveUp }),
+	            _react2['default'].createElement('button', {
+	              className: 'css-button-down',
+	              onClick: onMoveDown })
 	          )
 	        )
 	      );
@@ -21018,7 +21031,10 @@
 	
 	App.propTypes = {
 	  currentPlanet: _react.PropTypes.object.isRequired,
-	  jedis: _react.PropTypes.array.isRequired
+	  jedis: _react.PropTypes.array.isRequired,
+	
+	  onMoveUp: _react.PropTypes.func.isRequired,
+	  onMoveDown: _react.PropTypes.func.isRequired
 	};
 	module.exports = exports['default'];
 
@@ -21053,13 +21069,13 @@
 /* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
 	var _react = __webpack_require__(2);
 	
@@ -21068,24 +21084,24 @@
 	var Jedi = function Jedi(_ref) {
 	  var jedi = _ref.jedi;
 	
-	  if (jedi) {
-	    return _react2["default"].createElement(
-	      "li",
-	      { className: "css-slot" },
-	      _react2["default"].createElement(
-	        "h3",
+	  if (jedi.state === 'loaded') {
+	    return _react2['default'].createElement(
+	      'li',
+	      { className: 'css-slot' },
+	      _react2['default'].createElement(
+	        'h3',
 	        null,
 	        jedi.name
 	      ),
-	      _react2["default"].createElement(
-	        "h6",
+	      _react2['default'].createElement(
+	        'h6',
 	        null,
-	        "Homeworld: ",
+	        'Homeworld: ',
 	        jedi.homeworld.name
 	      )
 	    );
 	  } else {
-	    return _react2["default"].createElement("li", { className: "css-slot" });
+	    return _react2['default'].createElement('li', { className: 'css-slot' });
 	  }
 	};
 	exports.Jedi = Jedi;
@@ -21130,6 +21146,11 @@
 	var INVALIDATE_JEDI = 'INVALIDATE_JEDI';
 	
 	exports.INVALIDATE_JEDI = INVALIDATE_JEDI;
+	var MOVE_UP = 'MOVE_UP';
+	exports.MOVE_UP = MOVE_UP;
+	var MOVE_DOWN = 'MOVE_DOWN';
+	
+	exports.MOVE_DOWN = MOVE_DOWN;
 	var PLANET_CHANGED = 'PLANET_CHANGED';
 	exports.PLANET_CHANGED = PLANET_CHANGED;
 
@@ -21146,6 +21167,8 @@
 	exports.loadNextJediAsync = loadNextJediAsync;
 	exports.receiveJedi = receiveJedi;
 	exports.loadJediFailed = loadJediFailed;
+	exports.moveUp = moveUp;
+	exports.moveDown = moveDown;
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -21187,9 +21210,10 @@
 	
 	function loadNextJediAsync() {
 	  return function (dispatch, getState) {
-	    var toLoad = getState().currentJedis.filter(function (jedi) {
-	      return jedi ? jedi.state === 'needed' : false;
+	    var toLoad = getState().jedis.filter(function (jedi) {
+	      return jedi.state === 'needed';
 	    });
+	
 	    if (toLoad.length) {
 	      dispatch(loadJediAsync(toLoad[0].id));
 	    }
@@ -21207,6 +21231,20 @@
 	  return {
 	    type: _constantsActionTypes.LOAD_JEDI_FAILED,
 	    payload: err
+	  };
+	}
+	
+	function moveUp() {
+	  return function (dispatch) {
+	    dispatch({ type: _constantsActionTypes.MOVE_UP });
+	    dispatch(loadNextJediAsync());
+	  };
+	}
+	
+	function moveDown() {
+	  return function (dispatch) {
+	    dispatch({ type: _constantsActionTypes.MOVE_DOWN });
+	    dispatch(loadNextJediAsync());
 	  };
 	}
 	
@@ -21597,11 +21635,7 @@
 	
 	exports.currentPlanet = _interopRequire(_currentPlanet);
 	
-	var _currentJedis = __webpack_require__(196);
-	
-	exports.currentJedis = _interopRequire(_currentJedis);
-	
-	var _jedis = __webpack_require__(195);
+	var _jedis = __webpack_require__(196);
 	
 	exports.jedis = _interopRequire(_jedis);
 
@@ -21631,41 +21665,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
-	var _constantsActionTypes = __webpack_require__(184);
-	
-	exports['default'] = function (state, action) {
-	  if (state === undefined) state = {};
-	
-	  switch (action.type) {
-	    case _constantsActionTypes.RECEIVE_JEDI:
-	      var jedi = action.payload;
-	      return Object.assign({}, state, _defineProperty({}, jedi.id, jedi));
-	
-	    case _constantsActionTypes.INVALIDATE_JEDI:
-	      var id = action.payload;
-	      var jedis = Object.assign({}, state);
-	      delete jedis[id];
-	      return jedis;
-	
-	    default:
-	      return state;
-	  }
-	};
-	
-	module.exports = exports['default'];
-
-/***/ },
+/* 195 */,
 /* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -21677,33 +21677,49 @@
 	
 	var _constantsActionTypes = __webpack_require__(184);
 	
-	var initialState = [{ id: 3616, state: 'needed' }, null, null, null, null];
+	var initialState = [{ id: 3616, state: 'needed' }, {}, {}, {}, {}];
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = initialState;
 	
+	  var jedis = undefined;
+	
 	  switch (action.type) {
 	    case _constantsActionTypes.MOVE_UP:
+	      jedis = Object.assign([], state);
+	      jedis.unshift({}, { id: jedis[0].master.id, state: 'needed' });
+	      return jedis.slice(0, 5);
+	
 	    case _constantsActionTypes.MOVE_DOWN:
+	      jedis = Object.assign([], state);
+	      jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
+	      return jedis.slice(2, 5);
 	
 	    case _constantsActionTypes.LOAD_JEDI_QUEUED:
 	      // TODO: Mark the Jedi as loading
 	      return state;
 	
 	    case _constantsActionTypes.RECEIVE_JEDI:
+	      jedis = Object.assign([], state);
+	
 	      var receivedJedi = action.payload;
-	      var jedis = Object.assign([], state);
 	      var match = jedis.filter(function (jedi) {
-	        return jedi ? jedi.state === 'needed' : false;
-	      }).filter(function (jedi) {
 	        return jedi.id === receivedJedi.id;
 	      })[0];
 	
 	      match.state = 'loaded';
 	
 	      var index = jedis.indexOf(match);
-	      if (index > -1 && index < 4 && receivedJedi.apprentice.id) {
-	        jedis[index + 1] = { id: receivedJedi.apprentice.id, state: 'needed' };
+	      jedis[index] = Object.assign(match, receivedJedi);
+	
+	      if (index > 0 && receivedJedi.master.id && jedis[index - 1].state !== 'loaded') {
+	        jedis[index = 1].id = receivedJedi.master.id;
+	        jedis[index - 1].state = 'needed';
+	      }
+	
+	      if (index < 4 && receivedJedi.apprentice.id && jedis[index + 1].state !== 'loaded') {
+	        jedis[index + 1].id = receivedJedi.apprentice.id;
+	        jedis[index + 1].state = 'needed';
 	      }
 	
 	      return jedis;
