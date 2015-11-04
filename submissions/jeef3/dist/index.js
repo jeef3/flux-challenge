@@ -77,9 +77,9 @@
 	
 	var _containersAppContainerJsx2 = _interopRequireDefault(_containersAppContainerJsx);
 	
-	var _actionsPlanet = __webpack_require__(183);
+	var _actionsPlanet = __webpack_require__(192);
 	
-	var _actionsJedi = __webpack_require__(185);
+	var _actionsJedi = __webpack_require__(183);
 	
 	var _reducers = __webpack_require__(193);
 	
@@ -99,8 +99,7 @@
 	// Listen for planet change updates
 	var ws = new WebSocket('ws://localhost:4000');
 	ws.onmessage = function (event) {
-	  var planet = JSON.parse(event.data);
-	  store.dispatch((0, _actionsPlanet.changePlanet)(planet));
+	  store.dispatch((0, _actionsPlanet.changePlanet)(JSON.parse(event.data)));
 	};
 	
 	// Start loading Jedis
@@ -20923,7 +20922,7 @@
 	
 	var _componentsAppJsx2 = _interopRequireDefault(_componentsAppJsx);
 	
-	var _actionsJedi = __webpack_require__(185);
+	var _actionsJedi = __webpack_require__(183);
 	
 	function mapStateToProps(_ref) {
 	  var currentPlanet = _ref.currentPlanet;
@@ -21115,68 +21114,21 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
-	exports.changePlanet = changePlanet;
-	
-	var _constantsActionTypes = __webpack_require__(184);
-	
-	function changePlanet(planet) {
-	  return {
-	    type: _constantsActionTypes.PLANET_CHANGED,
-	    payload: planet
-	  };
-	}
-
-/***/ },
-/* 184 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	var LOAD_JEDI_QUEUED = 'LOAD_JEDI_QUEUED';
-	exports.LOAD_JEDI_QUEUED = LOAD_JEDI_QUEUED;
-	var LOAD_JEDI_STARTED = 'LOAD_JEDI_STARTED';
-	exports.LOAD_JEDI_STARTED = LOAD_JEDI_STARTED;
-	var LOAD_JEDI_FAILED = 'LOAD_JEDI_FAILED';
-	exports.LOAD_JEDI_FAILED = LOAD_JEDI_FAILED;
-	var RECEIVE_JEDI = 'RECEIVE_JEDI';
-	exports.RECEIVE_JEDI = RECEIVE_JEDI;
-	var INVALIDATE_JEDI = 'INVALIDATE_JEDI';
-	
-	exports.INVALIDATE_JEDI = INVALIDATE_JEDI;
-	var MOVE_UP = 'MOVE_UP';
-	exports.MOVE_UP = MOVE_UP;
-	var MOVE_DOWN = 'MOVE_DOWN';
-	
-	exports.MOVE_DOWN = MOVE_DOWN;
-	var PLANET_CHANGED = 'PLANET_CHANGED';
-	exports.PLANET_CHANGED = PLANET_CHANGED;
-
-/***/ },
-/* 185 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
 	exports.loadJediAsync = loadJediAsync;
 	exports.loadNextJediAsync = loadNextJediAsync;
 	exports.receiveJedi = receiveJedi;
 	exports.loadJediFailed = loadJediFailed;
 	exports.moveUp = moveUp;
 	exports.moveDown = moveDown;
+	exports.cancelCurrentLoad = cancelCurrentLoad;
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _xhr = __webpack_require__(186);
+	var _xhr = __webpack_require__(184);
 	
 	var _xhr2 = _interopRequireDefault(_xhr);
 	
-	var _constantsActionTypes = __webpack_require__(184);
+	var _constantsActionTypes = __webpack_require__(191);
 	
 	function loadJediAsync(id) {
 	  return function (dispatch) {
@@ -21191,10 +21143,12 @@
 	        uri: 'http://localhost:3000/dark-jedis/' + id
 	      }, function (err, res, body) {
 	        if (err || res.statusCode !== 200) {
-	          reject(dispatch(loadJediFailed(err)));
+	          dispatch(loadJediFailed(err));
+	          reject(err);
 	        } else {
-	          resolve(dispatch(receiveJedi(JSON.parse(body))));
+	          dispatch(receiveJedi(JSON.parse(body)));
 	          dispatch(loadNextJediAsync());
+	          resolve(body);
 	        }
 	      });
 	
@@ -21210,10 +21164,10 @@
 	  return function (dispatch, getState) {
 	    var toLoad = getState().jedis.filter(function (jedi) {
 	      return jedi.state === 'needed';
-	    });
+	    })[0];
 	
-	    if (toLoad.length) {
-	      dispatch(loadJediAsync(toLoad[0].id));
+	    if (toLoad) {
+	      dispatch(loadJediAsync(toLoad.id));
 	    }
 	  };
 	}
@@ -21246,20 +21200,24 @@
 	  };
 	}
 	
-	// export function cancelJediLoad(id) {
-	//   return (dispatch, store) => {
-	//     // TODO: Cancel request
-	//   };
-	// }
+	function cancelCurrentLoad() {
+	  return function (dispatch, getState) {
+	    var _getState = getState();
+	
+	    var currentRequest = _getState.currentRequest;
+	
+	    currentRequest.abort();
+	  };
+	}
 
 /***/ },
-/* 186 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var window = __webpack_require__(187)
-	var once = __webpack_require__(188)
-	var parseHeaders = __webpack_require__(189)
+	var window = __webpack_require__(185)
+	var once = __webpack_require__(186)
+	var parseHeaders = __webpack_require__(187)
 	
 	
 	
@@ -21448,7 +21406,7 @@
 
 
 /***/ },
-/* 187 */
+/* 185 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {if (typeof window !== "undefined") {
@@ -21464,7 +21422,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 188 */
+/* 186 */
 /***/ function(module, exports) {
 
 	module.exports = once
@@ -21489,11 +21447,11 @@
 
 
 /***/ },
-/* 189 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(190)
-	  , forEach = __webpack_require__(191)
+	var trim = __webpack_require__(188)
+	  , forEach = __webpack_require__(189)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -21525,7 +21483,7 @@
 	}
 
 /***/ },
-/* 190 */
+/* 188 */
 /***/ function(module, exports) {
 
 	
@@ -21545,10 +21503,10 @@
 
 
 /***/ },
-/* 191 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(192)
+	var isFunction = __webpack_require__(190)
 	
 	module.exports = forEach
 	
@@ -21597,7 +21555,7 @@
 
 
 /***/ },
-/* 192 */
+/* 190 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction
@@ -21618,6 +21576,54 @@
 
 
 /***/ },
+/* 191 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var LOAD_JEDI_QUEUED = 'LOAD_JEDI_QUEUED';
+	exports.LOAD_JEDI_QUEUED = LOAD_JEDI_QUEUED;
+	var LOAD_JEDI_STARTED = 'LOAD_JEDI_STARTED';
+	exports.LOAD_JEDI_STARTED = LOAD_JEDI_STARTED;
+	var LOAD_JEDI_FAILED = 'LOAD_JEDI_FAILED';
+	exports.LOAD_JEDI_FAILED = LOAD_JEDI_FAILED;
+	var RECEIVE_JEDI = 'RECEIVE_JEDI';
+	exports.RECEIVE_JEDI = RECEIVE_JEDI;
+	var INVALIDATE_JEDI = 'INVALIDATE_JEDI';
+	
+	exports.INVALIDATE_JEDI = INVALIDATE_JEDI;
+	var MOVE_UP = 'MOVE_UP';
+	exports.MOVE_UP = MOVE_UP;
+	var MOVE_DOWN = 'MOVE_DOWN';
+	
+	exports.MOVE_DOWN = MOVE_DOWN;
+	var PLANET_CHANGED = 'PLANET_CHANGED';
+	exports.PLANET_CHANGED = PLANET_CHANGED;
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	exports.changePlanet = changePlanet;
+	
+	var _constantsActionTypes = __webpack_require__(191);
+	
+	function changePlanet(planet) {
+	  return {
+	    type: _constantsActionTypes.PLANET_CHANGED,
+	    payload: planet
+	  };
+	}
+
+/***/ },
 /* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -21633,7 +21639,7 @@
 	
 	exports.currentPlanet = _interopRequire(_currentPlanet);
 	
-	var _jedis = __webpack_require__(196);
+	var _jedis = __webpack_require__(195);
 	
 	exports.jedis = _interopRequire(_jedis);
 
@@ -21647,7 +21653,7 @@
 	  value: true
 	});
 	
-	var _constantsActionTypes = __webpack_require__(184);
+	var _constantsActionTypes = __webpack_require__(191);
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = {};
@@ -21663,8 +21669,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 195 */,
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21673,62 +21678,85 @@
 	  value: true
 	});
 	
-	var _constantsActionTypes = __webpack_require__(184);
+	var _handlers;
 	
-	var initialState = [{ id: 3616, state: 'needed' }, {}, {}, {}, {}];
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	
+	var _constantsActionTypes = __webpack_require__(191);
+	
+	var initialState = [{}, {}, { id: 3616, state: 'needed' }, {}, {}];
+	
+	function refreshJediState(jedis) {
+	  jedis.forEach(function (jedi, index) {
+	    if (!jedi.id || jedi.state === 'needed') {
+	      return;
+	    }
+	
+	    var prev = jedis[index - 1];
+	    var next = jedis[index + 1];
+	
+	    if (jedi.master.id && prev && prev.state !== 'loaded') {
+	      prev.id = jedi.master.id;
+	      prev.state = 'needed';
+	    }
+	
+	    if (jedi.apprentice.id && next && next.state !== 'loaded') {
+	      next.id = jedi.apprentice.id;
+	      next.state = 'needed';
+	    }
+	  });
+	
+	  return jedis;
+	}
+	
+	var handlers = (_handlers = {}, _defineProperty(_handlers, _constantsActionTypes.MOVE_UP, function (state) {
+	  var newState = state.slice();
+	  newState.unshift({}, {});
+	
+	  return refreshJediState(newState.slice(0, 5));
+	}), _defineProperty(_handlers, _constantsActionTypes.MOVE_DOWN, function (state) {
+	  var newState = state.slice();
+	  newState.push({}, {});
+	
+	  return refreshJediState(newState.slice(2));
+	}), _defineProperty(_handlers, _constantsActionTypes.LOAD_JEDI_STARTED, function (state, _ref) {
+	  var id = _ref.id;
+	  var req = _ref.req;
+	
+	  var index = state.findIndex(function (j) {
+	    return j.id === id;
+	  });
+	  if (index === -1) {
+	    return state;
+	  }
+	
+	  var updatedJedi = Object.assign({}, state[index], { req: req });
+	
+	  var newState = state.slice();
+	  newState.splice(index, 1, updatedJedi);
+	
+	  return refreshJediState(newState);
+	}), _defineProperty(_handlers, _constantsActionTypes.RECEIVE_JEDI, function (state, jedi) {
+	  var updatedJedi = Object.assign({}, jedi, { state: 'loaded' });
+	  var index = state.findIndex(function (j) {
+	    return j.id === jedi.id;
+	  });
+	
+	  if (index === -1) {
+	    return state;
+	  }
+	
+	  var newState = state.slice();
+	  newState.splice(index, 1, updatedJedi);
+	
+	  return refreshJediState(newState);
+	}), _handlers);
 	
 	exports['default'] = function (state, action) {
 	  if (state === undefined) state = initialState;
 	
-	  var jedis = undefined;
-	
-	  switch (action.type) {
-	    case _constantsActionTypes.MOVE_UP:
-	      jedis = Object.assign([], state);
-	      jedis.unshift({}, { id: jedis[0].master.id, state: 'needed' });
-	      return jedis.slice(0, 5);
-	
-	    case _constantsActionTypes.MOVE_DOWN:
-	      jedis = Object.assign([], state);
-	      if (jedis[4].apprentice.id) {
-	        jedis.push({ id: jedis[4].apprentice.id, state: 'needed' }, {});
-	      } else {
-	        jedis.push({}, {});
-	      }
-	      return jedis.slice(2);
-	
-	    case _constantsActionTypes.LOAD_JEDI_QUEUED:
-	      // TODO: Mark the Jedi as loading
-	      return state;
-	
-	    case _constantsActionTypes.RECEIVE_JEDI:
-	      jedis = Object.assign([], state);
-	
-	      var receivedJedi = action.payload;
-	      var match = jedis.filter(function (jedi) {
-	        return jedi.id === receivedJedi.id;
-	      })[0];
-	
-	      match.state = 'loaded';
-	
-	      var index = jedis.indexOf(match);
-	      jedis[index] = Object.assign(match, receivedJedi);
-	
-	      if (index > 0 && receivedJedi.master.id && jedis[index - 1].state !== 'loaded') {
-	        jedis[index - 1].id = receivedJedi.master.id;
-	        jedis[index - 1].state = 'needed';
-	      }
-	
-	      if (index < 4 && receivedJedi.apprentice.id && jedis[index + 1].state !== 'loaded') {
-	        jedis[index + 1].id = receivedJedi.apprentice.id;
-	        jedis[index + 1].state = 'needed';
-	      }
-	
-	      return jedis;
-	
-	    default:
-	      return state;
-	  }
+	  var handler = handlers[action.type];
+	  return handler ? handler(state, action.payload) : state;
 	};
 	
 	module.exports = exports['default'];

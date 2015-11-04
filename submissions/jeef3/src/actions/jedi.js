@@ -22,10 +22,12 @@ export function loadJediAsync(id) {
         uri: `http://localhost:3000/dark-jedis/${id}`
       }, (err, res, body) => {
         if (err || res.statusCode !== 200) {
-          reject(dispatch(loadJediFailed(err)));
+          dispatch(loadJediFailed(err));
+          reject(err);
         } else {
-          resolve(dispatch(receiveJedi(JSON.parse(body))));
+          dispatch(receiveJedi(JSON.parse(body)));
           dispatch(loadNextJediAsync());
+          resolve(body);
         }
       });
 
@@ -40,10 +42,10 @@ export function loadJediAsync(id) {
 export function loadNextJediAsync() {
   return (dispatch, getState) => {
     let toLoad = getState().jedis
-      .filter(jedi => jedi.state === 'needed');
+      .filter(jedi => jedi.state === 'needed')[0];
 
-    if (toLoad.length) {
-      dispatch(loadJediAsync(toLoad[0].id));
+    if (toLoad) {
+      dispatch(loadJediAsync(toLoad.id));
     }
   };
 }
@@ -76,8 +78,9 @@ export function moveDown() {
   };
 }
 
-// export function cancelJediLoad(id) {
-//   return (dispatch, store) => {
-//     // TODO: Cancel request
-//   };
-// }
+export function cancelCurrentLoad() {
+  return (dispatch, getState) => {
+    const { currentRequest } = getState();
+    currentRequest.abort();
+  };
+}

@@ -23,8 +23,8 @@ ReactDOM.render(
 // Listen for planet change updates
 const ws = new WebSocket('ws://localhost:4000');
 ws.onmessage = (event) => {
-  const planet = JSON.parse(event.data);
-  store.dispatch(changePlanet(planet));
+  store.dispatch(
+    changePlanet(JSON.parse(event.data)));
 }
 
 // Start loading Jedis
