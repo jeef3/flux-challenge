@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
+import ScrollButtonsContainer from '../containers/ScrollButtonsContainer.jsx';
 import { PlanetMonitor } from './PlanetMonitor.jsx';
 import { Jedi } from './Jedi.jsx';
 
@@ -27,14 +28,7 @@ export default class App extends Component {
                   : false} />)}
           </ul>
 
-          <div className="css-scroll-buttons">
-            <button
-                className="css-button-up"
-                onClick={onMoveUp}></button>
-            <button
-                className="css-button-down"
-                onClick={onMoveDown}></button>
-          </div>
+          <ScrollButtonsContainer />
         </section>
       </div>
     );
@@ -43,8 +37,5 @@ export default class App extends Component {
 
 App.propTypes = {
   currentPlanet: PropTypes.object.isRequired,
-  jedis: PropTypes.array.isRequired,
-
-  onMoveUp: PropTypes.func.isRequired,
-  onMoveDown: PropTypes.func.isRequired
+  jedis: PropTypes.array.isRequired
 };
