@@ -14,10 +14,19 @@ function lastKnown(jedis) {
     .reverse()[0] || { apprentice: {} };
 }
 
-function mapStateToProps({ jedis }) {
+function hasMatchForPlanet(jedis, planet) {
+  return jedis
+    .filter(j => j.state === 'loaded')
+    .filter(j => j.homeworld.id === planet.id)
+    .length > 0;
+}
+
+function mapStateToProps({ jedis, currentPlanet }) {
+  const danger = hasMatchForPlanet(jedis, currentPlanet)
+
   return {
-    hasMasters: !!firstKnown(jedis).master.id,
-    hasApprentices: !!lastKnown(jedis).apprentice.id
+    upEnabled: !danger && !!firstKnown(jedis).master.id,
+    downEnabled: !danger && !!lastKnown(jedis).apprentice.id
   };
 }
 

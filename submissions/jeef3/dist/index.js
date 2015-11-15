@@ -21008,12 +21008,23 @@
 	  }).reverse()[0] || { apprentice: {} };
 	}
 	
+	function hasMatchForPlanet(jedis, planet) {
+	  return jedis.filter(function (j) {
+	    return j.state === 'loaded';
+	  }).filter(function (j) {
+	    return j.homeworld.id === planet.id;
+	  }).length > 0;
+	}
+	
 	function mapStateToProps(_ref) {
 	  var jedis = _ref.jedis;
+	  var currentPlanet = _ref.currentPlanet;
+	
+	  var danger = hasMatchForPlanet(jedis, currentPlanet);
 	
 	  return {
-	    hasMasters: !!firstKnown(jedis).master.id,
-	    hasApprentices: !!lastKnown(jedis).apprentice.id
+	    upEnabled: !danger && !!firstKnown(jedis).master.id,
+	    downEnabled: !danger && !!lastKnown(jedis).apprentice.id
 	  };
 	}
 	
@@ -21052,18 +21063,18 @@
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
 	var ScrollButtons = function ScrollButtons(_ref) {
-	  var hasMasters = _ref.hasMasters;
-	  var hasApprentices = _ref.hasApprentices;
+	  var upEnabled = _ref.upEnabled;
+	  var downEnabled = _ref.downEnabled;
 	  var onMoveUp = _ref.onMoveUp;
 	  var onMoveDown = _ref.onMoveDown;
 	  return _react2['default'].createElement(
 	    'div',
 	    { className: 'css-scroll-buttons' },
 	    _react2['default'].createElement('button', {
-	      className: (0, _classnames2['default'])('css-button-up', { 'css-button-disabled': !hasMasters }),
+	      className: (0, _classnames2['default'])('css-button-up', { 'css-button-disabled': !upEnabled }),
 	      onClick: onMoveUp }),
 	    _react2['default'].createElement('button', {
-	      className: (0, _classnames2['default'])('css-button-down', { 'css-button-disabled': !hasApprentices }),
+	      className: (0, _classnames2['default'])('css-button-down', { 'css-button-disabled': !downEnabled }),
 	      onClick: onMoveDown })
 	  );
 	};
