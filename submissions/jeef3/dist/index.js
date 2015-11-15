@@ -20960,7 +20960,7 @@
 	              return _react2['default'].createElement(_JediJsx.Jedi, {
 	                key: jedi.id || i,
 	                jedi: jedi,
-	                highlight: jedi.state === 'loaded' ? jedi.homeworld.id === currentPlanet.id : false });
+	                danger: jedi.state === 'loaded' ? jedi.homeworld.id === currentPlanet.id : false });
 	            })
 	          ),
 	          _react2['default'].createElement(_containersScrollButtonsContainerJsx2['default'], null)
@@ -21665,26 +21665,23 @@
 	
 	var Jedi = function Jedi(_ref) {
 	  var jedi = _ref.jedi;
+	  var danger = _ref.danger;
 	
-	  if (jedi.state === 'loaded') {
-	    return _react2['default'].createElement(
-	      'li',
-	      { className: 'css-slot' },
-	      _react2['default'].createElement(
-	        'h3',
-	        null,
-	        jedi.name
-	      ),
-	      _react2['default'].createElement(
-	        'h6',
-	        null,
-	        'Homeworld: ',
-	        jedi.homeworld.name
-	      )
-	    );
-	  } else {
-	    return _react2['default'].createElement('li', { className: 'css-slot' });
-	  }
+	  return jedi.state === 'loaded' ? _react2['default'].createElement(
+	    'li',
+	    { className: 'css-slot', style: { color: danger ? 'red' : null } },
+	    _react2['default'].createElement(
+	      'h3',
+	      null,
+	      jedi.name
+	    ),
+	    _react2['default'].createElement(
+	      'h6',
+	      null,
+	      'Homeworld: ',
+	      jedi.homeworld.name
+	    )
+	  ) : _react2['default'].createElement('li', { className: 'css-slot' });
 	};
 	exports.Jedi = Jedi;
 

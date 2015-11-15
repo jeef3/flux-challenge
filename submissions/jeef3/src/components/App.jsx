@@ -23,7 +23,7 @@ export default class App extends Component {
               <Jedi
                 key={jedi.id || i}
                 jedi={jedi}
-                highlight={jedi.state === 'loaded'
+                danger={jedi.state === 'loaded'
                   ? jedi.homeworld.id === currentPlanet.id
                   : false} />)}
           </ul>
